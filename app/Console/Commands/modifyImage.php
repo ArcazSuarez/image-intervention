@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Intervention\Image\Laravel\Facades\Image;
 
 class modifyImage extends Command
 {
@@ -27,16 +26,23 @@ class modifyImage extends Command
      */
     public function handle()
     {
-        $manager = new ImageManager(new Driver());
-        $image = $manager->read(public_path('image.png'));
-        $image->text('The quick brown fox', 120, 100, function ($font) {
-            $font->color('#b01735');
-            $font->size(70);
-            $font->align('center');
-            $font->valign('middle');
-            $font->lineHeight(1.6);
-            $font->angle(10);
-        });
-        $image->toJpeg(80);
+        $image = imagecreatefrompng(public_path('image.png'));
+
+        $gdColor = $this->hexToGDColor("#FF0000");
+        $x = 500;
+        $y = 600;
+        $font = public_path('arial.ttf');
+        $fontSize = 60;
+        $text = 'Sawakas!';
+
+        imagefttext($image,$fontSize,1,$x,$y,$gdColor,$font,$text);
+
+        imagejpeg($image,public_path('newNew.jpg'), 100);
+    }
+
+    function hexToGDColor($hexColor) {
+        $hexColor = str_replace("#", "", $hexColor);
+        $intColor = hexdec($hexColor);
+        return $intColor;
     }
 }
